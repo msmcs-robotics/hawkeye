@@ -1,0 +1,13 @@
+[Unit]
+Description=Hawyke Service
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/hawkeye
+Environment="workdir=/opt/hawkeye"
+ExecStart=python3 ${workdir}/hawykeye.py
+
+[Install]
+WantedBy=multi-user.target
