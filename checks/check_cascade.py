@@ -10,8 +10,8 @@ cap = cv2.VideoCapture(0, cv2.CAP_V4L2)
 
 # Try to set the resolution to 500x500 to save processing power
 # However the resolution might be overriden by the camera driver
-MAX_WIDTH = 300
-MAX_HEIGHT = 300
+MAX_WIDTH = 500
+MAX_HEIGHT = 500
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, MAX_WIDTH)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, MAX_HEIGHT)
 
@@ -43,13 +43,11 @@ while True:
     # Keep track of the index for logs
     for idx, (x, y, w, h) in enumerate(faces):
         
-        w = (w/100) * 50 # 50% of the width, place in center
-        h = (h/100) * 35 # 30% of the height, place slightly above center
+        #w = (w/100) * 50 # 50% of the width, place in center
+        #h = (h/100) * 35 # 30% of the height, place slightly above center
         
-        # Draw a red dot on the face
-        cv2.circle(img, (int(x + w), int(y + h)), 3, (0, 0, 255), 2)
-        # Fancy output to terminal
-        fancy_output(x+w, y+h, idx)
+        # Draw a rectangle around the face
+        cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
     
     # Display a window with the image
     cv2.imshow('img', img)
