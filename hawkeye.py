@@ -19,7 +19,7 @@ cap.set(cv2.CAP_PROP_FRAME_WIDTH, MAX_WIDTH)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, MAX_HEIGHT)
 
 # Delay between frames when tracking
-between_tracked_frames = 0.01
+between_tracked_frames = 0.009
 
 def fancy_output(x, y, face_num_index):
     print(Fore.GREEN, 

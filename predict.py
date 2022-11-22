@@ -41,13 +41,6 @@ class Predict_Centers:
 
         return x, y
 
-    def display(frame, centers1, centers2, centers3):
-        for center in centers1:
-            cv2.circle(frame, (center[0], center[1]), 3, (0, 0, 255), 2)
-
-        # Display the image with the detected faces
-        # cv2.imshow('img', img)
-
     def depth_perception(self, x1, x2, y1, y2, w1, w2, h1, h2):
         
         ratio = (w1/w2)
@@ -95,22 +88,28 @@ class Predict_Centers:
         # create a vector for each position
         for i in range(len(self.x_centers1)):
             # convert the x and y coordinates to a vector
-            pos1_vec = np.array([self.x_centers1[i], self.y_centers1[i]])
-            pos2_vec = np.array([self.x_centers2[i], self.y_centers2[i]])
+            try:
+                pos1_vec = np.array([self.x_centers1[i], self.y_centers1[i]])
+                pos2_vec = np.array([self.x_centers2[i], self.y_centers2[i]])
 
-            self.pos1_vecs.append(pos1_vec)
-            self.pos2_vecs.append(pos2_vec)
-        
+                self.pos1_vecs.append(pos1_vec)
+                self.pos2_vecs.append(pos2_vec)
+            except:
+                print("Error: no vector could be created")
+                pass
+
         # calculate the next position as vector
         # then convert it to x and y coordinates
-        print("number of vecs:" + str(len(self.pos1_vecs)))
+        #print("number of vecs:" + str(len(self.pos1_vecs)))
         
         c = 0
 
         for i in range(len(self.pos1_vecs)):
             self.calc_r3(self.pos1_vecs[i], self.pos2_vecs[i])
         
-        for i in range(len(self.vec_centersX)):
-            self.depth_perception(self.vec_centersX[i], self.dep_centersX[i], self.vec_centersY[i], self.dep_centersY[i], self.widths1[i], self.widths2[i], self.heights1[i], self.heights2[i])
+        #for i in range(len(self.vec_centersX)):
+            #self.depth_perception(self.vec_centersX[i], self.dep_centersX[i], self.vec_centersY[i], self.dep_centersY[i], self.widths1[i], self.widths2[i], self.heights1[i], self.heights2[i])
         
-        return self.dep_centersX, self.dep_centersY
+        return self.vec_centersX, self.vec_centersY
+
+        #return self.dep_centersX, self.dep_centersY
