@@ -88,15 +88,19 @@ class Predict_Centers:
         # create a vector for each position
         for i in range(len(self.x_centers1)):
             # convert the x and y coordinates to a vector
-            pos1_vec = np.array([self.x_centers1[i], self.y_centers1[i]])
-            pos2_vec = np.array([self.x_centers2[i], self.y_centers2[i]])
+            try:
+                pos1_vec = np.array([self.x_centers1[i], self.y_centers1[i]])
+                pos2_vec = np.array([self.x_centers2[i], self.y_centers2[i]])
 
-            self.pos1_vecs.append(pos1_vec)
-            self.pos2_vecs.append(pos2_vec)
-        
+                self.pos1_vecs.append(pos1_vec)
+                self.pos2_vecs.append(pos2_vec)
+            except:
+                print("Error: no vector could be created")
+                pass
+
         # calculate the next position as vector
         # then convert it to x and y coordinates
-        print("number of vecs:" + str(len(self.pos1_vecs)))
+        #print("number of vecs:" + str(len(self.pos1_vecs)))
         
         c = 0
 

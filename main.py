@@ -97,7 +97,7 @@ while True:
 		except:
 			pass'''
 
-	#new_centersX, new_centersY = Predict_Centers(widths1, widths2, heights1, heights2, centersX1, centersY1, centersX2, centersY2, MAX_WIDTH, MAX_HEIGHT).Track()
+	new_centersX, new_centersY = Predict_Centers(widths1, widths2, heights1, heights2, centersX1, centersY1, centersX2, centersY2, MAX_WIDTH, MAX_HEIGHT).Track()
 
 	# show old centers
 	for i in range(0, len(centersX1)):
@@ -107,8 +107,8 @@ while True:
 			pass
 	
 	# show new centers
-	#for i in range(0, len(new_centersX)):
-	#	cv2.circle(frame1, (int(new_centersX[i]), int(new_centersY[i])), 5, (0, 0, 255), 3)
+	for i in range(0, len(new_centersX)):
+		cv2.circle(frame1, (int(new_centersX[i]), int(new_centersY[i])), 5, (0, 0, 255), 3)
 
 	cv2.imshow("Result", frame1)
 	#cv2.imshow("Thresh", thresh)
