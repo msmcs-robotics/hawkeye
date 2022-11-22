@@ -1,74 +1,123 @@
-# import the necessary packages
+
 from imutils.video import VideoStream
 import argparse
 import datetime
 import imutils
-import time
+from time import sleep
 import cv2
+from predict import Predict_Centers
 
+# recommended to move out of the way of the camera
+delay = 3
+for i in range(0, delay):
+	print(delay - i)
+	sleep(1)
 
+# camera settings
 cap = VideoStream(src=0).start()
-time.sleep(2.0)
+MAX_WIDTH = 500
+MAX_HEIGHT = 500
 
-# initialize the first frame in the video stream
+# misc global variables
 firstFrame = None
+delay_btw_frames = 0.01
 
-# loop over the frames of the video
-while True:
 
-	# grab the current frame and initialize the occupied/unoccupied
-	# text
+# max area size is 1/4 of the screen
+obj_max_area_size = (MAX_WIDTH * MAX_HEIGHT) / 4
+# min area size is 1/100 of the screen
+obj_min_area_size = (MAX_WIDTH * MAX_HEIGHT) / 100
+
+# or just hard coded pixel values
+#obj_max_area_size = 40000
+#obj_min_area_size = 1000
+
+def get_objs():
+	
 	frame = cap.read()
-	text = "Unoccupied"
-
-	# if the frame could not be grabbed, then we have reached the end
-	# of the video
-	if frame is None:
-		break
-
-	# resize the frame, convert it to grayscale, and blur it
-	frame = imutils.resize(frame, width=500)
+	frame = imutils.resize(frame, width=MAX_WIDTH, height=MAX_HEIGHT)
 	gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 	gray = cv2.GaussianBlur(gray, (21, 21), 0)
 
-	# if the first frame is None, initialize it
-	if firstFrame is None:
-		firstFrame = gray
-		continue
+	return frame, gray
 
-    # compute the absolute difference between the current frame and
-	# first frame
+def get_contours(gray):
 	frameDelta = cv2.absdiff(firstFrame, gray)
 	thresh = cv2.threshold(frameDelta, 25, 255, cv2.THRESH_BINARY)[1]
-
-	# dilate the thresholded image to fill in holes, then find contours
-	# on thresholded image
 	thresh = cv2.dilate(thresh, None, iterations=2)
 	cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
 		cv2.CHAIN_APPROX_SIMPLE)
 	cnts = imutils.grab_contours(cnts)
+	return cnts
 
-	# loop over the contours
-	for c in cnts:
-		# compute the bounding box for the contour, draw it on the frame,
-		# and update the text
+def target_tune(contours):
+	# return x and y coordinates of centers of contours
+	centers_x = []
+	centers_y = []
+	widths = []
+	heights = []
+
+	for c in contours:
 		(x, y, w, h) = cv2.boundingRect(c)
-		cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-		text = "Occupied"
-		
-        # draw the text and timestamp on the frame
-	cv2.putText(frame, "Room Status: {}".format(text), (10, 20),
-		cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-	cv2.putText(frame, datetime.datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
-		(10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
-	# show the frame and record if the user presses a key
-	cv2.imshow("Security Feed", frame)
-	cv2.imshow("Thresh", thresh)
-	cv2.imshow("Frame Delta", frameDelta)
+		# if rectangle is too small or to large, ignore it
+		if not (w * h < obj_min_area_size) or (w * h > obj_max_area_size):
+			for c2 in contours:
+				(x2, y2, w2, h2) = cv2.boundingRect(c2)
+				if not (x > x2 and y > y2 and x + w < x2 + w2 and y + h < y2 + h2):
+					centers_x.append(x + w / 2)
+					centers_y.append(y + h / 2)
+	
+	return centers_x, centers_y, widths, heights
+
+while True:
+
+	centersX1 = []
+	centersY1 = []
+
+	centersX2 = []
+	centersY2 = []
+
+	frame1, gray1 = get_objs()
+	if firstFrame is None:
+		firstFrame = gray1
+	contours1 = get_contours(gray1)
+
+	sleep(delay_btw_frames)
+
+	frame2, gray2 = get_objs()
+	contours2 = get_contours(gray2)
+
+	centersX1, centersY1, widths1, heights1 = target_tune(contours1)
+	centersX2, centersY2, widths2, heights2 = target_tune(contours2)
+
+	'''for i in range(0, len(centersX1)):
+		try:
+			cv2.circle(frame1, (int(centersX1[i]), int(centersY1[i])), 5, (0, 0, 255), 3)
+			cv2.circle(frame2, (int(centersX2[i]), int(centersY2[i])), 5, (0, 0, 255), 3)
+		except:
+			pass'''
+
+	#new_centersX, new_centersY = Predict_Centers(widths1, widths2, heights1, heights2, centersX1, centersY1, centersX2, centersY2, MAX_WIDTH, MAX_HEIGHT).Track()
+
+	# show old centers
+	for i in range(0, len(centersX1)):
+		try:
+			cv2.circle(frame1, (int(centersX1[i]), int(centersY1[i])), 5, (0, 255, 0), 3)
+		except:
+			pass
+	
+	# show new centers
+	#for i in range(0, len(new_centersX)):
+	#	cv2.circle(frame1, (int(new_centersX[i]), int(new_centersY[i])), 5, (0, 0, 255), 3)
+
+	cv2.imshow("Result", frame1)
+	#cv2.imshow("Thresh", thresh)
+	#cv2.imshow("Frame Delta", frameDelta)
+	
 	key = cv2.waitKey(1) & 0xFF
-	# if the `q` key is pressed, break from the lop
-	if key == ord("q"):
+	if key == 27:
 		break
-# cleanup the camera and close any open windows
+
+
 cap.stop()
 cv2.destroyAllWindows()
