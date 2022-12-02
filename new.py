@@ -1,25 +1,20 @@
 from imutils.video import VideoStream
-import argparse
-import datetime
 import imutils
-import time
 import cv2
 import numpy as np
-from time import sleep
 from colorama import Fore
+from time import sleep
 
 cap = VideoStream(src=0).start()
-time.sleep(2.0)
 
 MAX_WIDTH = 500
 MAX_HEIGHT = 500
-
 min_target_area = ((MAX_WIDTH * MAX_HEIGHT) / 100) * 3
 max_target_area = ((MAX_WIDTH * MAX_HEIGHT) / 100) * 25
 
-# initialize the first frame in the video stream
 firstFrame = None
 secFrame = None
+
 delay_between_frames = 0.01
 
 def fancy_output(x, y, face_num_index, action):
@@ -79,7 +74,7 @@ def calc_3rd_center(x1, y1, x2, y2):
 	# make a new vector
 	r3 = r2 + delta_r
 
-	# get the x and y coordinates of the new vector
+	# get coordinates from new vector
 	x = r3[0]
 	y = r3[1]
 
@@ -88,33 +83,33 @@ def calc_3rd_center(x1, y1, x2, y2):
 
 	return x, y
 
-
 while True:
 
 	cX1 = []
 	cY1 = []
-	cX2 = []
-	cY2 = []
 
 	widths1 = []
 	heights1 = []
+
+	cX2 = []
+	cY2 = []
+
 	widths2 = []
 	heights2 = []
 
+	
 	frame1 = cap.read()
 	sleep(delay_between_frames)
 	frame2 = cap.read()
 
 	# get contours from 1st frame
-	if frame1 is None:
-		break
 	frame1_gray = gray_blur(frame1)
 	if firstFrame is None:
 		firstFrame = frame1_gray
 		continue
 	cnts1 = get_contours(frame1_gray, firstFrame)
 	
-	
+	frame2 = cap.read()
 	# get contours from 2nd frame
 	frame2_gray = gray_blur(frame2)
 	if secFrame is None:
@@ -146,7 +141,7 @@ while True:
 			heights2.append(h)
 			#cv2.circle(frame2, (cx, cy), 3, (0, 255, 0), 3)
 
-	for i in range(0, len(cX2)):
+	for i in range(len(cX2)):
 		try:
 			fancy_output(cX2[i], cY2[i], i+1, "Detected at: ")
 			cv2.circle(frame2, (int(cX2[i]), int(cY2[i])), 3, (0, 255, 0), 3)
@@ -161,8 +156,7 @@ while True:
 		except:
 			pass
 
-	cv2.imshow("Result", frame1)
-	cv2.imshow("Result2", frame2)
+	cv2.imshow("Result", frame2)
 	key = cv2.waitKey(1) & 0xFF
 	# if the `q` key is pressed, break from the lop
 	if key == ord("q"):
