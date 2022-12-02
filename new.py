@@ -14,13 +14,13 @@ time.sleep(2.0)
 MAX_WIDTH = 500
 MAX_HEIGHT = 500
 
-min_target_area = (MAX_WIDTH * MAX_HEIGHT) / 100
-max_target_area = (MAX_WIDTH * MAX_HEIGHT) / 2
+min_target_area = ((MAX_WIDTH * MAX_HEIGHT) / 100) * 3
+max_target_area = ((MAX_WIDTH * MAX_HEIGHT) / 100) * 25
 
 # initialize the first frame in the video stream
 firstFrame = None
 secFrame = None
-delay_between_frames = 0.0001
+delay_between_frames = 0.01
 
 def fancy_output(x, y, face_num_index, action):
 	print(
@@ -55,6 +55,7 @@ def check_target_size(w, h):
 		return False
 	else:
 		return True
+
 def check_out_of_frame(x, y):
 	if x > MAX_WIDTH:
 			x = MAX_WIDTH
@@ -112,6 +113,7 @@ while True:
 		firstFrame = frame1_gray
 		continue
 	cnts1 = get_contours(frame1_gray, firstFrame)
+	
 	
 	# get contours from 2nd frame
 	frame2_gray = gray_blur(frame2)
