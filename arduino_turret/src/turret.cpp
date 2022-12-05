@@ -11,11 +11,15 @@ struct {
     int width_resolution = 500;
     int height_resolution = 500;
 
+    int delay_time = 100;
+
 } info_vars;
 
 struct {
     int xServoPin = 9;
     int yServoPin = 10;
+
+    int statusLedPin = 13;
 
 } pinout;
 
@@ -24,8 +28,13 @@ Servo yServo;
 
 void setup() {
     Serial.begin(info_vars.baud);
+    
     xServo.attach(pinout.xServoPin);
     yServo.attach(pinout.yServoPin);
+    pinMode(pinout.statusLedPin, OUTPUT);
+
+    Serial.println("Setup complete");
+    Serial.println("Waiting for input...\nFormat: (x,y)");
 }
 
 // Convert x and y coordinates to servo angles
@@ -56,12 +65,18 @@ int getY(String input) {
 // Main loop
 
 void loop() {
+    // blink status led
+    digitalWrite(pinout.statusLedPin, HIGH);
     if (Serial.available() > 0) {
-        String input = Serial.readStringUntil(')');
+        String input = Serial.readStringUntil('\n');
         int x = getX(input);
         int y = getY(input);
         xServo.write(convertX(x));
         yServo.write(convertY(y));
+        Serial.println("Input x: " + String(x) + " y: " + String(y));
+        Serial.println("Converted x: " + String(convertX(x)) + " y: " + String(convertY(y)));
     }
+    delay(info_vars.delay_time);
+    digitalWrite(pinout.statusLedPin, LOW);
 }
 

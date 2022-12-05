@@ -73,5 +73,4 @@ init () {
     fi
 }
 
-clean
 init
