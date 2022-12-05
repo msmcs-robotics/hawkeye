@@ -3,6 +3,7 @@ from colorama import Fore
 from playsound import playsound
 import time
 import os
+import serial
 
 from smbus import SMBus
 
@@ -34,17 +35,27 @@ pwmX.start(0)
 pwmY.start(0)
 
 
-class Arduino_Turret:
-    
-    # Really just forwards the coordinates
-    # and tells it to fire
+class Arduino_Turret:    
+    # Really just forwards coordinates
+    servo_max_degrees = 180
+
+    # serial
+    baud = 9600
+    ard_tty = '/dev/ttyACM0'
+
+    # i2c
     ard1_addr = 0x08
 
-    def fire(x, y):
-        f = 1
-        bus = SMBus(1)
-        bus.write_byte_data(Arduino_Turret.ard1_addr, x, y, f)
+    def fire(self, x, y):
+        # send the coordinates to the arduino over serial
+        # format: (x, y)
 
+        with serial.Serial(self.ard_tty, self.baud, timeout=1) as arduino:
+            if arduino.isOpen():
+                arduino.write(bytes(f'{x},{y}', 'utf-8'))
+                print(f'{Fore.GREEN}Firing at {x}, {y}{Fore.RESET}')
+
+    
 class Pi_Turret:
     
     # Turret System attached to the Raspberry Pi
