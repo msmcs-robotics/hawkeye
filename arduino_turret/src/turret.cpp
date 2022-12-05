@@ -11,13 +11,16 @@ struct {
     int width_resolution = 500;
     int height_resolution = 500;
 
-    int delay_time = 100;
+    int read_delay = 100;
+    int fire_delay = 100;
 
 } info_vars;
 
 struct {
     int xServoPin = 9;
     int yServoPin = 10;
+
+    int relay_pin = 8;
 
     int statusLedPin = 13;
 
@@ -32,6 +35,10 @@ void setup() {
     xServo.attach(pinout.xServoPin);
     yServo.attach(pinout.yServoPin);
     pinMode(pinout.statusLedPin, OUTPUT);
+    pinMode(pinout.relay_pin, OUTPUT);
+
+    xServo.write(0);
+    yServo.write(0);
 
     Serial.println("Setup complete");
     Serial.println("Waiting for input...\nFormat: (x,y)");
@@ -71,12 +78,15 @@ void loop() {
         String input = Serial.readStringUntil('\n');
         int x = getX(input);
         int y = getY(input);
+        digitalWrite(pinout.relay_pin, HIGH);
         xServo.write(convertX(x));
         yServo.write(convertY(y));
+        delay(info_vars.fire_delay);
+        digitalWrite(pinout.relay_pin, LOW);
         Serial.println("Input x: " + String(x) + " y: " + String(y));
         Serial.println("Converted x: " + String(convertX(x)) + " y: " + String(convertY(y)));
     }
-    delay(info_vars.delay_time);
+    delay(info_vars.read_delay);
     digitalWrite(pinout.statusLedPin, LOW);
 }
 
