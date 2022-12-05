@@ -1,5 +1,3 @@
-from turret import Pi_Turret
+from turret import Arduino_Turret
 
-
-Pi_Turret.arm()
 
