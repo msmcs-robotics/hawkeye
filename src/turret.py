@@ -27,8 +27,8 @@ def alarm():
 
 def run(x, y):
     t1 = threading.Thread(target=fire, args=(x, y))
-    t2 = threading.Thread(target=alarm)
     t1.start()
-    # check if alarm thread is alive
-    if not t2.is_alive():
+    # check if alarm thread exists
+    if not any(t.name == 'alarm' for t in threading.enumerate()):
+        t2 = threading.Thread(target=alarm, name='alarm')
         t2.start()
