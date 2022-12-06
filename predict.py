@@ -151,9 +151,9 @@ class Predict_Centers:
         
         #print("number of vec centers:" + str(len(self.vec_centersX)))
 
-        for i in range(len(self.vec_centersX)):
-            self.depth_perception(self.vec_centersX[i], self.vec_centersY[i], self.widths1[i], self.widths2[i], self.heights1[i], self.heights2[i])
-            fancy_depth_predict(self.dep_centersX[i], self.dep_centersY[i], i)
+        #for i in range(len(self.vec_centersX)):
+        #    self.depth_perception(self.vec_centersX[i], self.vec_centersY[i], self.widths1[i], self.widths2[i], self.heights1[i], self.heights2[i])
+        #    fancy_depth_predict(self.dep_centersX[i], self.dep_centersY[i], i)
         
         #print("number of dep centers:" + str(len(self.dep_centersX)))
         return self.vec_centersX, self.vec_centersY

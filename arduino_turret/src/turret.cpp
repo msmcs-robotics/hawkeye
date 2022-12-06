@@ -75,7 +75,7 @@ void loop() {
     // blink status led
     digitalWrite(pinout.statusLedPin, HIGH);
     if (Serial.available() > 0) {
-        String input = Serial.readStringUntil('\n');
+        String input = Serial.readStringUntil(')');
         int x = getX(input);
         int y = getY(input);
         digitalWrite(pinout.relay_pin, HIGH);

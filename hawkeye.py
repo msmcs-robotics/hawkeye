@@ -2,6 +2,7 @@ import cv2
 from predict import Predict_Centers
 from colorama import Fore
 from time import sleep
+from turret import fire
 
 
 # Load the cascade to compare frames to in order to detect faces
@@ -9,7 +10,7 @@ from time import sleep
 face_cascade = cv2.CascadeClassifier('./assets/haarcascade_frontalface_default.xml')
 
 # Select the capture device. 0 -> /dev/video0
-cap = cv2.VideoCapture(0, cv2.CAP_V4L2)
+cap = cv2.VideoCapture(0)
 
 # Try to set the resolution to 300x300 to save processing power
 # However the resolution might be overriden by the camera driver
@@ -19,7 +20,7 @@ cap.set(cv2.CAP_PROP_FRAME_WIDTH, MAX_WIDTH)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, MAX_HEIGHT)
 
 # Delay between frames when tracking
-between_tracked_frames = 0.009
+between_tracked_frames = 0.01
 
 def fancy_output(x, y, face_num_index):
     print(Fore.GREEN, 
@@ -98,6 +99,7 @@ while True:
     for center in range(len(new_centersX)):
         fancy_output_predict(new_centersX[center], new_centersY[center], i)
         cv2.circle(frame2, (new_centersX[center], new_centersY[center]), 3, (0, 0, 255), 2)
+        fire(new_centersX[center], new_centersY[center])
         i += 1
 
 
