@@ -5,7 +5,7 @@ from serial import Serial
 from playsound import playsound
 import threading
 
-alarm_file = "../assets/owl.mp3"
+alarm_file = "../assets/doom.mp3"
 
 baud_rate = 9600
 ard_tty = ""
@@ -25,7 +25,7 @@ def fire(x, y):
 def alarm():
     playsound(alarm_file)
 
-def run(x, y):
+def turret(x, y):
     t1 = threading.Thread(target=fire, args=(x, y))
     t1.start()
     # check if alarm thread exists

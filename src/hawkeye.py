@@ -2,7 +2,7 @@ import cv2
 from predict import Predict_Centers
 from colorama import Fore
 from time import sleep
-from turret import *
+from turret import turret
 
 
 # Load the cascade to compare frames to in order to detect faces
@@ -90,7 +90,7 @@ while True:
     i = 0
     for center in range(len(centersX_2)):
         fancy_output(centersX_2[center], centersY_2[center], i)
-        #cv2.circle(frame2, (centersX_2[center], centersY_2[center]), 3, (0, 255, 0), 2)
+        cv2.circle(frame2, (centersX_2[center], centersY_2[center]), 3, (0, 255, 0), 2)
         i += 1
 
     # display the predicted positions
@@ -99,8 +99,7 @@ while True:
     for center in range(len(new_centersX)):
         fancy_output_predict(new_centersX[center], new_centersY[center], i)
         cv2.circle(frame2, (new_centersX[center], new_centersY[center]), 3, (0, 0, 255), 2)
-        fire(new_centersX[center], new_centersY[center])
-        alarm()
+        turret(new_centersX[center], new_centersY[center])
         i += 1
 
 
